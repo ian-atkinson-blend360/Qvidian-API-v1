@@ -1,9 +1,9 @@
 import zeep
-import logging.config
 from lxml import etree
 import sys
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 import os
+import logging.config
 
 QvidianAuthenticationWSDL = './wsdl/QvidianAuthentication.wsdl'
 CommonWSDL ='./wsdl/Common.wsdl'
@@ -13,7 +13,7 @@ logging.config.dictConfig({
     'version': 1,
     'formatters': {
         'verbose': {
-            'format': '%(asctime)s:: %(name)s: %(message)s'
+            'format': '%(name)s: %(message)s'
         }
     },
     'handlers': {
@@ -21,22 +21,13 @@ logging.config.dictConfig({
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
-        },
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'level': 'DEBUG',
-            'formatter': 'verbose',
-            'filename': '/tmp/qvidianapi.log',
-            'mode': 'a',
-            'maxBytes': 10485760,
-            'backupCount': 5,
-	    },
+        }
     },
     'loggers': {
         'zeep.transports': {
             'level': 'DEBUG',
             'propagate': True,
-            'handlers': ['console','file'],
+            'handlers': ['console'],
         },
     }
 })
@@ -68,10 +59,10 @@ def update_endpoint(file,newurl):
 		namespaces = {'soap':'http://schemas.xmlsoap.org/wsdl/soap/'}
 		tree.findall('.//soap:address',namespaces)[0].attrib['location']=newurl
 		with open(file, 'w') as file_handle:
-		    file_handle.write(etree.tostring(tree, pretty_print=True, encoding='utf8'))		
+		    file_handle.write(etree.tostring(tree, pretty_print=True, encoding='utf8').decode())
 	except:
 		e = sys.exc_info()[0]
-		print e
+		print(e)
 		return False
 	else:
 		return True
