@@ -72,6 +72,7 @@ class QvidianAuthentication:
 	def __init__( self, endpoint_url = 'https://qpalogin.qvidian.com/QvidianAuthentication.asmx' , wsdl_file = os.path.join(os.path.dirname(__file__), "QvidianAuthentication.wsdl") ):
 		update_endpoint(wsdl_file,endpoint_url)
 		self.client = zeep.Client(wsdl=wsdl_file)
+		self.client.transport.session.verify = False
 		self.ConnectResult = None
 	def Connect(self, userName, password):
 		self.ConnectResult = self.client.service.Connect(userName=userName, password=password)['body']['ConnectResult']
@@ -81,6 +82,7 @@ class Common():
 		endpoint_url = auth.ConnectResult['CommonURL']
 		update_endpoint(wsdl_file,endpoint_url)
 		self.client = zeep.Client(wsdl=wsdl_file)
+		self.client.transport.session.verify = False
 		self.HasPermissionsResponse = None
 		self.HeaderType = self.client.get_element('ns0:QvidianCredentialHeader')
 		self.AuthenticationToken = auth.ConnectResult['AuthToken']
@@ -94,6 +96,7 @@ class ContentLibrary():
 	def __init__( self, endpoint_url , wsdl_file = os.path.join(os.path.dirname(__file__), "QvidianAuthentication.wsdl") ):
 		update_endpoint(wsdl_file,endpoint_url)
 		self.client = zeep.Client(wsdl=wsdl_file)
+		self.client.transport.session.verify = False
 		self.librarySearchRequestsInitResponse    = None
 		self.librarySearchesAsListsResponse       = None
 		self.libraryContentPreviewHTMLGetResponse = None
@@ -109,20 +112,4 @@ class ContentLibrary():
 
 	def libraryContentPreviewHTMLGet(self, AuthenticationToken , ContentID):
 		QvidianCredentialHeader = self.HeaderType(AuthenticationToken=AuthenticationToken)
-		self.libraryContentPreviewHTMLGetResponse=self.client.service.libraryContentPreviewHTMLGet(_soapheaders=[QvidianCredentialHeader],contentID=ContentID,revision='-1')['body']['libraryContentPreviewHTMLGetResult']		
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
+		self.libraryContentPreviewHTMLGetResponse=self.client.service.libraryContentPreviewHTMLGet(_soapheaders=[QvidianCredentialHeader],contentID=ContentID,revision='-1')['body']['libraryContentPreviewHTMLGetResult']
